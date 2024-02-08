@@ -32,3 +32,12 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
 @app.get("/{fileId}")
 async def get_file(name: str):
     return {"message": f"Hello {name}"}
+
+if __name__ == "__main__":
+    import uvicorn
+    print("Running the ShareX server.")
+    uvicorn.run(app,
+                host=config["internal_host"],
+                port=config["internal_port"],
+                log_level=config["log_level"]
+                )
