@@ -21,15 +21,20 @@ os.makedirs(upload_dir, exist_ok=True)
 
 # Create a FastAPI instance
 app = FastAPI()
-os.makedirs("uploads", exist_ok=True)
+api_key_header = APIKeyHeader(name="secret-key", auto_error=False)
 
-SECRET_KEY = "met_ta_key_ici_bibou"
-
-api_key_header = APIKeyHeader(name="X-API-Key")
 
 async def check_api_key(api_key: str = Depends(api_key_header)):
-    if api_key != SECRET_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    # If the secret key is not provided
+    if api_key is None or api_key == "":
+        # 401 Unauthorized
+        raise HTTPException(status_code=401, detail="Secret Key is missing >:(")
+
+    # If the secret key is incorrect
+    if api_key != config["secret_key"]:
+        # 403 Forbidden
+        raise HTTPException(status_code=403, detail="Invalid secret Key >:(")
     return api_key
 
 
@@ -43,8 +48,6 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
 
     # Retrieve file extension
     extension = os.path.splitext(file.filename)[1]
-    file_name = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
-    file_path = f"uploads/{file_name}{extension}"
 
     # Generate a random file name (32 characters)
     file_name = ''.join(random.choices(string.ascii_letters + string.digits, k=config["filename_size"]))
