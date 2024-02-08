@@ -18,3 +18,17 @@ filename_size: 32
 # Can be relative and absolute paths
 # If the directory doesn't exist, it will be created
 upload_directory: "uploads"
+
+
+# The IP to listen to.
+# this does NOT affect the public URL
+internal_host: 0.0.0.0
+
+# The port to listen to.
+# this does NOT affect the public URL
+internal_port: 8080
+
+# The log level
+# Available levels: 'critical', 'error', 'warning', 'info', 'debug', 'trace'
+log_level: "critical"
+
