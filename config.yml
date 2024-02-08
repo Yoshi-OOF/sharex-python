@@ -1,0 +1,20 @@
+# The PUBLIC url of your website.
+url: http://example.com:8080/
+
+# The secret key required to upload
+secret_key: "super-secret-key"
+
+# max size in bytes (= 8 bits)
+# You can convert the size on: https://convertlive.com/u/convert/bits/to/megabytes
+# -1 to disable the limit
+# 0 to disable the upload
+max_file_size: 8192000000
+
+# The size of the filename (without the extension)
+# The name will be generated randomly, and the extension is kept
+filename_size: 32
+
+# The directory where the files will be stored
+# Can be relative and absolute paths
+# If the directory doesn't exist, it will be created
+upload_directory: "uploads"
