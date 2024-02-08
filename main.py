@@ -44,11 +44,14 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
 
 async def file_handler(file: UploadFile, filepath: str):
 
-        async with aiofiles.open(filepath, 'wb') as f:
-            while chunk := await file.read(config["chunk_size"]):
-                await f.write(chunk)
-
-        await file.close()
+    try:
+        with open(filepath, 'wb') as f:
+            while contents := file.file.read(1024 * 1024):
+                f.write(contents)
+    except Exception:
+        return {"message": "There was an error uploading the file"}
+    finally:
+        file.file.close()
 
 
 @app.post("/", response_class=PlainTextResponse)

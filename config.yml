@@ -30,7 +30,7 @@ internal_port: 8080
 
 # The log level
 # Available levels: 'critical', 'error', 'warning', 'info', 'debug', 'trace'
-log_level: "error"
+log_level: "info"
 
 
 # Used for big files.
