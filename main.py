@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.security import APIKeyHeader
-from fastapi.responses import FileResponse
+from fastapi.responses import PlainTextResponse, FileResponse
 
 import os
 import random
@@ -41,7 +41,7 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
     return api_key
 
 
-@app.post("/")
+@app.post("/", response_class=PlainTextResponse)
 async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_api_key)):
     content = await file.read()
 
@@ -62,9 +62,8 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     with open(file_path, "wb") as file_object:
         file_object.write(content)
 
-    print(f'{url}{file_name}{extension}')
     # Return the URL of the uploaded file
-    return f'{url}{file_name}{extension}'
+    return f"{url}{file_name}{extension}"
 
 
 @app.get("/{file_id}")
