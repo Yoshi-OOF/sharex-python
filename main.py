@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.security import APIKeyHeader
 import os
+import random
+import string
 app = FastAPI()
 os.makedirs("uploads", exist_ok=True)
 
@@ -16,9 +18,16 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
 @app.post("/")
 async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_api_key)):
     content = await file.read()
-    with open(f"uploads/{file.filename}", "wb") as file_object:
+    extension = os.path.splitext(file.filename)[1]
+    file_name = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    file_path = f"uploads/{file_name}{extension}"
+    with open(file_path, "wb") as file_object:
         file_object.write(content)
-    return {file.filename}
+    return {
+        "file_name": file_name,
+        "extension": extension,
+        "file_path": file_path
+    }
 
 @app.get("/{fileId}")
 async def get_file(name: str):
