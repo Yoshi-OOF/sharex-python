@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.security import APIKeyHeader
+from fastapi.responses import FileResponse
+
 import os
 import random
 import string
@@ -63,7 +65,19 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     return f'{url}{file_name}{extension}'
 
 
+@app.get("/{file_id}")
+async def get_file(file_id):
+    # Check if the file exists
     file_path = f"{upload_dir}/{file_id}"
+
+    # If the file does not exist
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found >:(")
+
+    # Return the file
+    return FileResponse(file_path)
+
+
 if __name__ == "__main__":
     import uvicorn
     print("Running the ShareX server.")
