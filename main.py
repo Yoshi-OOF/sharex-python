@@ -3,6 +3,7 @@ import random
 import string
 
 import aiofiles
+import fastapi
 import yaml
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.responses import PlainTextResponse, FileResponse
@@ -42,29 +43,13 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
     return api_key
 
 
-async def file_handler(file: UploadFile, filepath: str):
-
-    try:
-        with open(filepath, 'wb') as f:
-            while contents := file.file.read(1024 * 1024):
-                f.write(contents)
-    except Exception:
-        return {"message": "There was an error uploading the file"}
-    finally:
-        file.file.close()
-
-
 @app.post("/", response_class=PlainTextResponse)
-async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_api_key)):
+async def post_file(request: fastapi.Request, api_key: str = Depends(check_api_key)):
 
-    # If the file size is greater than the maximum file size
-    print(file.size)
-
-    if -1 < config["max_file_size"] < file.size:
-        raise HTTPException(status_code=413, detail="File too large >:(")
 
     # Retrieve file extension
-    extension = os.path.splitext(file.filename)[1]
+    #extension = os.path.splitext(file.filename)[1]
+    extension = ".png"
 
     # Generate a random file name (32 characters)
     file_name = ''.join(random.choices(string.ascii_letters + string.digits, k=config["filename_size"]))
@@ -72,8 +57,9 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     # Choosing where to save the file
     file_path = f"{upload_dir}/{file_name}{extension}"
 
-    # Write the file to the specified location
-    await file_handler(file, file_path)
+    async with aiofiles.open(file_path, 'wb') as buffer:
+        async for chunk in request.stream():
+            await buffer.write(chunk)
 
     # Return the URL of the uploaded file
     return f"{url}{file_name}{extension}"
