@@ -30,5 +30,11 @@ internal_port: 8080
 
 # The log level
 # Available levels: 'critical', 'error', 'warning', 'info', 'debug', 'trace'
-log_level: "critical"
+log_level: "error"
+
+
+# Used for big files.
+chunk_size: 10485760 # = 10MB
+
+
 
