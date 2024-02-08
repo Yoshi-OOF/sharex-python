@@ -1,11 +1,12 @@
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
-from fastapi.security import APIKeyHeader
-from fastapi.responses import PlainTextResponse, FileResponse
-
 import os
 import random
 import string
+
+import aiofiles
 import yaml
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
+from fastapi.responses import PlainTextResponse, FileResponse
+from fastapi.security import APIKeyHeader
 
 
 # Load the configuration file
@@ -41,12 +42,22 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
     return api_key
 
 
+async def file_handler(file: UploadFile, filepath: str):
+
+        async with aiofiles.open(filepath, 'wb') as f:
+            while chunk := await file.read(config["chunk_size"]):
+                await f.write(chunk)
+
+        await file.close()
+
+
 @app.post("/", response_class=PlainTextResponse)
 async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_api_key)):
-    content = await file.read()
 
     # If the file size is greater than the maximum file size
-    if -1 < config["max_file_size"] < len(content):
+    print(file.size)
+
+    if -1 < config["max_file_size"] < file.size:
         raise HTTPException(status_code=413, detail="File too large >:(")
 
     # Retrieve file extension
@@ -59,8 +70,7 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     file_path = f"{upload_dir}/{file_name}{extension}"
 
     # Write the file to the specified location
-    with open(file_path, "wb") as file_object:
-        file_object.write(content)
+    await file_handler(file, file_path)
 
     # Return the URL of the uploaded file
     return f"{url}{file_name}{extension}"
