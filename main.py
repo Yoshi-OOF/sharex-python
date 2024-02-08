@@ -13,7 +13,8 @@ config = yaml.load(open("config.yml"), Loader=yaml.FullLoader)
 
 
 # Add a trailing slash if it's not present
-url = config["url"] + "" if config["url"][-1] == "/" else "/"
+url = config["url"] + ("" if config["url"][-1] == "/" else "/")
+
 
 
 # Create the upload directory if it doesn't exist
@@ -61,6 +62,7 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     with open(file_path, "wb") as file_object:
         file_object.write(content)
 
+    print(f'{url}{file_name}{extension}')
     # Return the URL of the uploaded file
     return f'{url}{file_name}{extension}'
 
