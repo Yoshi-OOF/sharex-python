@@ -1,6 +1,6 @@
 POST http://127.0.0.1:80/
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-X-API-Key: met_ta_key_ici_bibou
+secret-key: super-secret-key
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="file"; filename="test.txt"
@@ -8,3 +8,7 @@ Content-Type: text/plain
 
 Hello World
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Get a file
+GET http://127.0.0.1:80/FILENAME.EXT
+Content-Type: application/json
