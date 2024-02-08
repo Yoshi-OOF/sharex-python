@@ -1,7 +1,9 @@
-POST http://127.0.0.1:80/post
-Content-Type: application/json
+POST http://127.0.0.1:80/
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
-{
-  "id": 999,
-  "value": "content"
-}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.txt"
+Content-Type: text/plain
+
+Hello World
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
