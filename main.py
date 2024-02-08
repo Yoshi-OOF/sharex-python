@@ -46,7 +46,7 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     content = await file.read()
 
     # If the file size is greater than the maximum file size
-    if config["max_file_size"] > -1 and len(content) > 1000000 and config["max_file_size"]:
+    if -1 < config["max_file_size"] < len(content):
         raise HTTPException(status_code=413, detail="File too large >:(")
 
     # Retrieve file extension
