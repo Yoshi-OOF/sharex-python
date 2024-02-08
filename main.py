@@ -18,6 +18,7 @@ async def post_file(file: UploadFile = File(...), api_key: str = Depends(check_a
     content = await file.read()
     with open(f"uploads/{file.filename}", "wb") as file_object:
         file_object.write(content)
+    return {file.filename}
 
 @app.get("/{fileId}")
 async def get_file(name: str):
