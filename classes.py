@@ -1,3 +1,4 @@
+# Exception raised when the body(≈ file) size exceeds the maximum size
 class MaxBodySizeException(Exception):
     def __init__(self, body_len: int):
         self.body_len = body_len
