@@ -76,10 +76,10 @@ async def process_file(request: Request):
         print("Client Disconnected")
     except MaxBodySizeException as e:
         raise HTTPException(status_code=413,
-                            detail=f'Maximum request body size limit ({MAX_REQUEST_BODY_SIZE} bytes) exceeded ({e.body_len} bytes read)')
+                            detail=f'Maximum request body size limit ({config["max_file_size"]} bytes) exceeded ({e.body_len} bytes read)')
     except streaming_form_data.validators.ValidationError:
         raise HTTPException(status_code=413,
-                            detail=f'Maximum file size limit ({MAX_FILE_SIZE} bytes) exceeded')
+                            detail=f'Maximum file size limit ({config["max_file_size"]} bytes) exceeded')
     except Exception:
         raise HTTPException(status_code=500,
                             detail='There was an error uploading the file')
