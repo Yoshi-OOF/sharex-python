@@ -8,7 +8,7 @@ secret_key: "super-secret-key"
 # You can convert the size on: https://convertlive.com/u/convert/bits/to/megabytes
 # -1 to disable the limit
 # 0 to disable the upload
-max_file_size: 8192000000
+max_file_size: 1048576 # = 1 Megabyte
 
 # The size of the filename (without the extension)
 # The name will be generated randomly, and the extension is kept
