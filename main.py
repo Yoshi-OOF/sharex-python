@@ -48,6 +48,7 @@ async def check_api_key(api_key: str = Depends(api_key_header)):
 
 
 async def process_file(request: Request):
+
     body_validator = MaxBodySizeValidator(config["max_file_size"])
     filename = request.headers.get('Filename')
 
@@ -71,18 +72,23 @@ async def process_file(request: Request):
         return file_name
 
     except ClientDisconnect:
-        cancel_upload(file_path)
+        try:
+            file_.finish()
+        finally:
+            cancel_upload(file_path)
 
-    except MaxBodySizeException as e:
-        cancel_upload(file_path)
+    except (MaxBodySizeException, streaming_form_data.validators.ValidationError):
+        try:
+            file_.finish()
+        finally:
+            cancel_upload(file_path)
         raise HTTPException(status_code=413,
-                            detail=f'Maximum request body size limit ({config["max_file_size"]} bytes) exceeded ({e.body_len} bytes read)')
-    except streaming_form_data.validators.ValidationError:
-        cancel_upload(file_path)
-        raise HTTPException(status_code=413,
-                            detail=f'Maximum file size limit ({config["max_file_size"]} bytes) exceeded')
+                            detail=f'Maximum request body/file size limit ({config["max_file_size"]} bytes) exceeded')
     except Exception:
-        cancel_upload(file_path)
+        try:
+            file_.finish()
+        finally:
+            cancel_upload(file_path)
         raise HTTPException(status_code=500,
                             detail='There was an error uploading the file')
 
